@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ScreeningType {
+  SNEAK_PREVIEW
+  BLOODY_FRIDAY
+}
+
+enum Role {
+  MEMBER
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(MEMBER)
+  createdAt    DateTime @default(now())
+
+  screenings Screening[] @relation("CreatedBy")
+}
+
+model Movie {
+  id            String    @id @default(cuid())
+  tmdbId        Int?      @unique
+  title         String
+  originalTitle String?
+  posterPath    String?
+  backdropPath  String?
+  overview      String?
+  releaseDate   DateTime?
+  runtimeMin    Int?
+  genres        String[]
+  directors     String[]
+  voteAverage   Float?
+  createdAt     DateTime  @default(now())
+
+  screenings Screening[]
+}
+
+model Screening {
+  id          String        @id @default(cuid())
+  date        DateTime
+  type        ScreeningType @default(SNEAK_PREVIEW)
+  movieId     String?
+  movie       Movie?        @relation(fields: [movieId], references: [id])
+  createdById String
+  createdBy   User          @relation("CreatedBy", fields: [createdById], references: [id])
+  notes       String?
+
+  // Vom Kino ca. 1 Woche später veröffentlichte Publikumsbewertung, drei
+  // Kategorien (Gut/So lala/Hundsmiserabel), jeweils 0-100.
+  officialGutPercent            Int?
+  officialSoLalaPercent         Int?
+  officialHundsmiserabelPercent Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([date])
+  @@index([type])
+}
