@@ -6,7 +6,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
 import { upsertMovieFromTmdb } from "@/lib/movies";
-import { screeningTypeTime } from "@/lib/labels";
+import { germanWallTimeToUtc, screeningTypeTime } from "@/lib/labels";
 import type { ScreeningType } from "@/generated/prisma/client";
 
 const schema = z.object({
@@ -31,7 +31,7 @@ function parsePercent(raw: string | undefined): number | null {
 function combineDateWithScreeningTime(dateOnly: string, type: ScreeningType): Date {
   const [year, month, day] = dateOnly.split("-").map(Number);
   const { hours, minutes } = screeningTypeTime[type];
-  return new Date(year, month - 1, day, hours, minutes);
+  return germanWallTimeToUtc(year, month, day, hours, minutes);
 }
 
 export type ScreeningFormState = { error?: string };
