@@ -49,17 +49,17 @@ export default async function ScreeningDetailPage({
 
       {past && (
         <>
-          <div className="flex gap-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
+          <div className="flex items-start gap-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
             {screening.movie?.posterPath && (
               <Image
                 src={`https://image.tmdb.org/t/p/w154${screening.movie.posterPath}`}
                 alt={screening.movie.title}
                 width={77}
                 height={116}
-                className="rounded"
+                className="h-auto w-[77px] shrink-0 rounded"
               />
             )}
-            <div>
+            <div className="min-w-0 flex-1">
               <h2 className="text-lg font-semibold text-zinc-950 dark:text-zinc-50">
                 {screening.movie?.title ?? "Unbekannter Film"}
               </h2>
